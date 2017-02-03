@@ -1,6 +1,7 @@
 import React from 'react'
 import gql from 'graphql-tag'
 import styled from 'styled-components'
+import { propType } from 'graphql-anywhere'
 
 const Title = styled.div`
   color: #7F7F7F;
@@ -12,8 +13,19 @@ const Title = styled.div`
 
 export default class PokemonCardHeader extends React.Component {
 
+  static fragments = {
+    pokemon: gql`
+      fragment PokemonCardHeaderPokemon on Pokemon {
+        name
+        trainer {
+          name
+        }
+      }
+    `
+  }
+
   static propTypes = {
-    pokemon: React.PropTypes.object.isRequired,
+    pokemon: propType(PokemonCardHeader.fragments.pokemon).isRequired,
   }
 
   render () {
