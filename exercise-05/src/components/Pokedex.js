@@ -21,7 +21,7 @@ class Pokedex extends React.Component {
       Trainer: React.PropTypes.object,
     }).isRequired,
   }
-
+ 
   render () {
     if (this.props.data.loading) {
       return (<div>Loading</div>)
@@ -38,6 +38,7 @@ class Pokedex extends React.Component {
           Hey {this.props.data.Trainer.name}, there are {this.props.data.Trainer.ownedPokemons.length} Pokemons in your pokedex
         </Title>
         <div className='flex flex-wrap justify-center center w-75'>
+          <AddPokemonPreview trainerId={this.props.data.Trainer.id} />
           {this.props.data.Trainer.ownedPokemons.map((pokemon) =>
             <PokemonPreview key={pokemon.id} pokemon={pokemon} />
           )}
@@ -49,6 +50,7 @@ class Pokedex extends React.Component {
 
 const TrainerQuery = gql`query TrainerQuery($name: String!) {
   Trainer(name: $name) {
+    id
     name
     ownedPokemons {
       id

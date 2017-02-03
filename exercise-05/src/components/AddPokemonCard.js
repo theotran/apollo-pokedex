@@ -80,7 +80,12 @@ class AddPokemonCard extends React.Component {
   }
 
   handleSave = () => {
-
+    const {name, url} = this.state;//taking the state and passing in the name and url variables
+    const trainerId = this.props.params.trainerId;//taking trainerId from props then calling this.props.mutate
+    this.props.mutate({variables: {name, url, trainerId}})//calls mutation
+      .then(() => {
+        this.props.router.replace('/')
+      })
   }
 
   handleCancel = () => {
@@ -88,4 +93,20 @@ class AddPokemonCard extends React.Component {
   }
 }
 
-export default withRouter(AddPokemonCard)
+const createPokemonMutation = gql`
+  mutation createPokemon($name: String!, $url: String!, $trainerId: ID) {
+    createPokemon(name: $name, url: $url, trainerId: $trainerId) {
+      trainer {
+        id 
+        ownedPokemons {
+          id 
+        }
+      }
+    }
+  }
+`
+
+//passing in the mutation as props as well 
+const addPokemonCardWithMutation = graphql(createPokemonMutation)(withRouter(AddPokemonCard));//wrapping the component with the mutation 
+
+export default addPokemonCardWithMutation;
