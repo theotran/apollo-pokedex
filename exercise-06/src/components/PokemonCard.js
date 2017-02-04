@@ -28,6 +28,7 @@ class PokemonCard extends React.Component {
   static fragments = {
     pokemon: gql`
       fragment PokemonCardPokemon on Pokemon {
+        id
         url
         name
       }
@@ -81,13 +82,43 @@ class PokemonCard extends React.Component {
       (this.props.pokemon.name !== this.state.name || this.props.pokemon.url !== this.state.url)
   }
 
-  handleUpdate = () => {
-
+  handleUpdate = () => {//taking the updatePokemon function that we got by wrapping the component with the query then passing in the variable values
+    this.props.updatePokemon({variables: { id: this.props.pokemon.id, name: this.state.name, url: this.state.url }})
+      .then(this.props.afterChange)
   }
 
   handleDelete = () => {
-
+    this.props.deletePokemon({variables: {id: this.props.pokemon.id }})
+      .then(this.props.afterChange)
   }
 }
 
-export default PokemonCard
+const updatePokemon = gql`
+  mutation updatePokemon($id: ID!, $name: String!, $url: String!) {
+    updatePokemon(id: $id, name: $name, url: $url) {
+      id
+      ...PokemonCardPokemon
+    }
+  }
+  ${PokemonCard.fragments.pokemon}
+`
+
+const deletePokemon = gql`
+  mutation deletePokemon($id: ID!) {
+    deletePokemon(id: $id) {
+      id
+    }
+  }
+` 
+
+
+const PokemonCardWithMutations = graphql(deletePokemon, {name: 'deletePokemon'})(
+  graphql(updatePokemon, {name: 'updatePokemon'})(PokemonCard)
+)
+
+export default PokemonCardWithMutations;
+
+
+
+
+
